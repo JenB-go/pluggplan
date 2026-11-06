@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lukas träningsläger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pitch:#1d5a3a; --pitch-deep:#143f29; --chalk:#f6f7f3; --paper:#ffffff;
+  --ink:#16251c; --muted:#5b6a60; --line:#d8ded8; --card:#f2b630; --card-ink:#2b2100;
+  --good:#2f8a57; --good-bg:#e3f2e8; --bad:#b4442f; --bad-bg:#f8e6e2; --soft:#e9efe9;
+  color-scheme: light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pitch:#2b7a50; --pitch-deep:#173d29; --chalk:#101a14; --paper:#16231b;
+    --ink:#e8efe9; --muted:#9db0a3; --line:#2c3d32; --good:#55b67f; --good-bg:#183526;
+    --bad:#e07a62; --bad-bg:#3a201a; --soft:#1c2c22; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --pitch:#2b7a50; --pitch-deep:#173d29; --chalk:#101a14; --paper:#16231b;
+  --ink:#e8efe9; --muted:#9db0a3; --line:#2c3d32; --good:#55b67f; --good-bg:#183526;
+  --bad:#e07a62; --bad-bg:#3a201a; --soft:#1c2c22; color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--chalk);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:0 18px 48px}
+h1,h2,h3,.cond{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif}
+.hero{background:var(--pitch);color:#fff;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 100%, transparent 88px, rgba(255,255,255,.3) 89px, rgba(255,255,255,.3) 91px, transparent 92px),
+  linear-gradient(to right, transparent calc(50% - 1px), rgba(255,255,255,.3) calc(50% - 1px), rgba(255,255,255,.3) calc(50% + 1px), transparent calc(50% + 1px));}
+.hero .wrap{position:relative;padding-top:24px;padding-bottom:26px}
+.hero h1{font-size:clamp(2.2rem,8vw,3.2rem);line-height:.95;margin:0 0 6px;font-weight:800}
+.hero p{margin:0;color:rgba(255,255,255,.88);max-width:38ch}
+.back{display:inline-block;color:#fff;margin-bottom:10px;font-weight:600;text-decoration:none}
+.back:hover{text-decoration:underline}
+.total{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:var(--card);color:var(--card-ink);border-radius:6px;padding:6px 12px;font-weight:600}
+.pill b{font-family:"Barlow Condensed",sans-serif;font-size:1.3rem;margin-right:4px}
+.pill.ghost{background:rgba(255,255,255,.14);color:#fff}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:26px}
+.subj{display:block;text-decoration:none;color:inherit;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.subj:hover{border-color:var(--pitch)}
+.subj h2{margin:0;font-size:1.5rem;line-height:1.1}
+.subj .meta{color:var(--muted);font-size:.9rem;margin:2px 0 10px}
+.lvl{display:flex;justify-content:space-between;font-size:.9rem;font-weight:600}
+.bar{height:7px;background:var(--soft);border-radius:4px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:var(--good);transition:width .4s ease}
+
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:18px}
+.panel h2{margin:0 0 4px;font-size:1.5rem}
+.panel .lead{margin:0 0 12px;color:var(--muted)}
+.qhead{display:flex;justify-content:space-between;color:var(--muted);font-size:.9rem;margin-bottom:6px}
+.q{font-weight:600;font-size:1.1rem;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;background:var(--chalk);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--pitch)}
+.opt.right{background:var(--good-bg);border-color:var(--good)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{margin-top:12px;padding:10px 12px;border-radius:6px;background:var(--soft)}
+.fb b{font-family:"Barlow Condensed",sans-serif;font-size:1.15rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.btn{font:inherit;font-weight:600;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;background:var(--pitch);color:#fff}
+.btn.sec{background:var(--soft);color:var(--ink)}
+.hint{margin-top:10px;font-style:italic;color:var(--muted)}
+.chal{list-style:none;margin:0;padding:0}
+.chal li{border-top:1px solid var(--line)}
+.chal label{display:grid;grid-template-columns:26px 1fr auto;gap:10px;padding:10px 0;cursor:pointer;align-items:start}
+.chal input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--good)}
+.chal .xp{font-family:"Barlow Condensed",sans-serif;font-weight:700;color:var(--muted);white-space:nowrap}
+.chal input:checked ~ span{color:var(--muted)}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{border:1px dashed var(--line);border-radius:6px;padding:6px 10px;font-size:.9rem;color:var(--muted)}
+.badge.got{border-style:solid;border-color:var(--card);background:var(--card);color:var(--card-ink);font-weight:600}
+.note{font-size:.9rem;color:var(--muted);margin-top:10px}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(140%);background:var(--card);color:var(--card-ink);font-weight:600;padding:10px 16px;border-radius:8px;transition:transform .3s ease;z-index:20;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{margin-top:30px;color:var(--muted);font-size:.85rem}
+button.reset{font:inherit;font-size:.85rem;background:none;border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:5px;cursor:pointer}
+:focus-visible{outline:3px solid var(--card);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.bar i,.toast{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const S = {
+fysik:{name:"Fysik 1b", topic:"Rörelsemängd och energi", match:"Prov tors 19/11 kl. 13.30",
+ note:"Läraren skriver att fokus troligen ligger på rörelsemängd.",
+ quiz:[
+  {q:"Hur räknar man ut rörelsemängd?", o:["p = m · v","p = m · a","p = F · s","p = m · g · h"], a:0, h:"Tänk massa och fart.", e:"Rörelsemängd är massa gånger hastighet, p = m · v. Enheten är kg·m/s."},
+  {q:"En boll på 0,4 kg rör sig med 10 m/s. Hur stor är rörelsemängden?", o:["0,4 kg·m/s","4 kg·m/s","25 kg·m/s","40 kg·m/s"], a:1, h:"Multiplicera massan med hastigheten.", e:"p = 0,4 · 10 = 4 kg·m/s."},
+  {q:"Vad är impuls?", o:["Kraft gånger tid, och lika med ändringen i rörelsemängd","Massa gånger acceleration","Energi per sekund","Kraft gånger sträcka"], a:0, h:"Tänk på en spark: hur hårt och hur länge foten är i kontakt med bollen.", e:"Impuls I = F · Δt, och den är lika med ändringen i rörelsemängd, Δp."},
+  {q:"Två spelare krockar. Vad gäller om inga yttre krafter verkar?", o:["Den totala rörelsemängden är lika stor före och efter","Den totala rörelseenergin är alltid lika stor","Båda stannar alltid","Den tyngsta får all rörelsemängd"], a:0, h:"Det heter rörelsemängdens bevarande.", e:"Rörelsemängden bevaras i ett slutet system. Rörelseenergin bevaras bara i en elastisk stöt."},
+  {q:"Vad kännetecknar en fullständigt oelastisk stöt?", o:["Föremålen fastnar i varandra och rör sig vidare tillsammans","Ingen energi försvinner","Föremålen studsar isär med samma fart","Rörelsemängden försvinner"], a:0, h:"Tänk på två lerbollar som krockar.", e:"I en fullständigt oelastisk stöt sitter föremålen ihop efteråt. Rörelsemängden bevaras, men en del rörelseenergi blir till värme och deformation."},
+  {q:"Vilken formel ger rörelseenergi?", o:["E = m · g · h","E = m · v² / 2","E = F · s","E = P · t"], a:1, h:"Farten är i kvadrat.", e:"Rörelseenergi (kinetisk energi) är E = mv²/2. Dubbla farten ger fyra gånger så mycket energi."},
+  {q:"En boll på 0,5 kg ligger på en hylla 2 m upp. Hur stor är lägesenergin? (g ≈ 9,82 m/s²)", o:["1 J","4,9 J","9,8 J","19,6 J"], a:2, h:"Använd E = m · g · h.", e:"E = 0,5 · 9,82 · 2 ≈ 9,8 J."},
+  {q:"Vad är effekt?", o:["Arbete per tidsenhet","Kraft gånger tid","Massa gånger fart","Energi gånger sträcka"], a:0, h:"Enheten är watt.", e:"Effekt P = W / t, alltså hur snabbt ett arbete utförs. 1 W = 1 J/s."}
+ ],
+ chal:[["Förklara skillnaden mellan rörelsemängd och rörelseenergi högt, med ett fotbollsexempel",20],["Gör 5 uppgifter om rörelsemängd utan att titta i facit",30],["Gör om alla uppgifter du missade",30],["Gör ett gammalt prov på tid",40]]
+},
+bio:{name:"Biologi 2", topic:"Miljö, växter, svampar och beteenden", match:"Prov tis 24/11",
+ note:"Vad provet omfattar är en bedömning utifrån lärarens planering. Sidor: Biologi 1 s. 200–218 och 278–311, Biologi 2 s. 86–103.",
+ quiz:[
+  {q:"Var i kloroplasten sker Calvincykeln?", o:["I tylakoidmembranet","I stromat","I cellkärnan","I mitokondrien"], a:1, h:"Ljusreaktionerna sker i membranen, den andra delen i ”vätskan” runt omkring.", e:"Calvincykeln sker i stromat. Ljusreaktionerna sker i tylakoidmembranen."},
+  {q:"Varför stänger CAM-växter som kaktusar klyvöppningarna på dagen?", o:["För att spara vatten","För att slippa insekter","För att det är för mörkt","För att de inte behöver koldioxid"], a:0, h:"De växer ofta i öken.", e:"CAM-växter tar upp koldioxid på natten och lagrar den. På dagen hålls klyvöppningarna stängda för att minska vattenförlusten."},
+  {q:"Vilket problem minskar C4-växter som majs?", o:["Fotorespiration","Försurning","Fotosyntes","Celldelning"], a:0, h:"Det händer när enzymet Rubisco tar syre i stället för koldioxid.", e:"C4-växter koncentrerar koldioxid runt Rubisco och minskar fotorespirationen, vilket ger fördel i varma, soliga miljöer."},
+  {q:"Vilket växthormon får frukter att mogna?", o:["Auxin","Eten","Cytokinin","Abscisinsyra"], a:1, h:"Det är en gas. Därför mognar avokado snabbare bredvid en banan.", e:"Eten är en gas som sätter igång fruktmognad."},
+  {q:"Vad är mykorrhiza?", o:["Ett samarbete mellan svamp och växtrötter","En sjukdom hos svampar","En typ av spor","En växtdel som gör fotosyntes"], a:0, h:"Båda parter vinner.", e:"Mykorrhiza är en symbios där svampen ger växten vatten och näring, och växten ger svampen socker."},
+  {q:"Vilka ämnen orsakar främst övergödning?", o:["Kväve och fosfor","Svavel och kväveoxider","Koldioxid och metan","Kvicksilver och PCB"], a:0, h:"Samma ämnen som finns i gödsel.", e:"Kväve och fosfor gör att alger växer kraftigt. När de dör och bryts ner går syret åt, och det blir syrebrist på bottnarna."},
+  {q:"Vad betyder att ett miljögift biomagnifieras?", o:["Halten ökar högre upp i näringskedjan","Giftet bryts ner snabbt","Giftet blir ofarligt i vatten","Giftet bara finns i växter"], a:0, h:"Tänk på varför sälar och rovfåglar drabbades av DDT och PCB.", e:"Fettlösliga gifter som PCB och DDT lagras i kroppen. Varje led äter många från ledet under, så halten blir högst i toppen."},
+  {q:"En kyckling följer det första rörliga den ser efter kläckningen. Vad kallas det?", o:["Prägling","Habituering","Klassisk betingning","Altruism"], a:0, h:"Konrad Lorenz och gässen.", e:"Prägling är inlärning som sker under en kort känslig period tidigt i livet."},
+  {q:"En fågel slutar reagera på en fågelskrämma som aldrig gör något. Vad heter det?", o:["Habituering","Prägling","Instinkt","Revirbeteende"], a:0, h:"Man vänjer sig.", e:"Habituering är när ett djur slutar reagera på en upprepad retning som inte har betydelse."}
+ ],
+ chal:[["Gör en begreppslista för beteenden (Biologi 1 s. 200–218)",20],["Rita fotosyntesen och förklara den högt",30],["Förklara skillnaden mellan C3, C4 och CAM för någon hemma",30],["Förklara försurning, övergödning och växthuseffekt med egna ord",30]]
+},
+psyk:{name:"Psykologi 1", topic:"Den handlande och sociala människan", match:"Prov tis 1/12 i Dugga",
+ note:"Moment enligt lärarens planering v 43–49. Repetitionslektion fre 27/11.",
+ quiz:[
+  {q:"Vad visade Milgrams experiment?", o:["Att många lyder en auktoritet även när det känns fel","Att grupper alltid fattar bättre beslut","Att människor hjälper mer när fler ser på","Att belöning ökar inre motivation"], a:0, h:"Försökspersonerna trodde att de gav elchocker.", e:"I Milgrams experiment fortsatte en stor del av deltagarna att ge (falska) elchocker för att en forskare sa till dem."},
+  {q:"I Aschs experiment valde många fel linje. Varför?", o:["De anpassade sig till gruppen","De såg dåligt","De fick betalt","De var trötta"], a:0, h:"Alla andra i rummet var med i experimentet.", e:"Det kallas konformitet: man ändrar sitt svar för att passa in i gruppen."},
+  {q:"Vad är åskådareffekten?", o:["Ju fler som ser en nödsituation, desto mindre troligt att någon hjälper","Att publik gör idrottare bättre","Att man härmar andra","Att grupper blir mer extrema"], a:0, h:"Ansvaret sprids ut.", e:"Åskådareffekten förklaras bland annat med ansvarsdiffusion: alla tror att någon annan ska agera. Darley och Latané studerade fenomenet."},
+  {q:"Vad är grupptänk?", o:["När en grupp prioriterar enighet så mycket att den fattar dåliga beslut","När en grupp brainstormar","När en ledare bestämmer allt","När alla tänker olika"], a:0, h:"Irving Janis och Grisbukten.", e:"Vid grupptänk vågar ingen ifrågasätta. Kritik tystas och gruppen tror att den inte kan ha fel."},
+  {q:"Vilken ordning har gruppens faser enligt Tuckman?", o:["Forming, storming, norming, performing","Storming, forming, performing, norming","Norming, forming, storming, performing","Performing, norming, storming, forming"], a:0, h:"Först lär man känna varandra, sen blir det konflikter.", e:"Forming (bekanta sig), storming (konflikter), norming (regler och roller), performing (gruppen presterar). Ibland läggs adjourning (avslut) till."},
+  {q:"Du tränar fotboll för att det är kul, inte för att få pris. Vilken motivation är det?", o:["Inre motivation","Yttre motivation","Social facilitering","Konformitet"], a:0, h:"Kommer drivet inifrån eller utifrån?", e:"Inre motivation betyder att aktiviteten i sig känns belönande. Yttre motivation kommer från belöning eller straff."},
+  {q:"Vad visade Zimbardos fängelseexperiment?", o:["Att roller och situation kan påverka beteende kraftigt","Att alla människor är aggressiva","Att fångar alltid gör uppror","Att lydnad bara gäller militärer"], a:0, h:"Studenter fick spela vakter och fångar.", e:"Experimentet avbröts i förtid när ”vakterna” blev allt hårdare. Det har kritiserats mycket för hur det genomfördes, vilket är bra att kunna nämna."}
+ ],
+ chal:[["Förklara grupptänk med ett exempel från ett lag eller kompisgäng",20],["Gå igenom alla åtta moment och förklara dem högt",30],["Gå på repetitionslektionen fre 27/11",20],["Jämför Milgram och Asch: vad är lika, vad skiljer?",40]]
+},
+svenska:{name:"Svenska 2", topic:"Språksituationen i Norden och grammatik", match:"Seminarium ons 11/11 eller fre 13/11. Grammatikprov ons 16/12",
+ note:"Vad grammatikprovet tar upp är inte klart än. Frågorna här är allmän grund.",
+ quiz:[
+  {q:"Vilka nordiska språk förstår varandra bäst?", o:["Svenska, norska och danska","Svenska, finska och isländska","Finska, samiska och estniska","Isländska och danska"], a:0, h:"De kallas de skandinaviska språken.", e:"Svenska, norska och danska är så nära släkt att man ofta kan förstå varandra. Det kallas grannspråksförståelse."},
+  {q:"Varför är finska annorlunda än svenska, fast båda talas i Norden?", o:["Finska tillhör en annan språkfamilj (finsk-ugriska språk)","Finska är en dialekt av svenska","Finska kommer från latin","Finska är ett konstgjort språk"], a:0, h:"Det är släkt med estniska och ungerska.", e:"Finska är ett finsk-ugriskt språk. Svenska, norska, danska, isländska och färöiska är nordgermanska."},
+  {q:"Hur många nationella minoritetsspråk har Sverige?", o:["Tre","Fem","Sju","Tio"], a:1, h:"Finska och samiska är två av dem.", e:"Fem: finska, samiska, meänkieli, romani chib och jiddisch."},
+  {q:"Vilken ordklass är ordet ”snabbt” i ”Han sprang snabbt”?", o:["Adjektiv","Adverb","Verb","Substantiv"], a:1, h:"Det beskriver hur han sprang.", e:"”Snabbt” beskriver verbet och är här ett adverb, så räknas det i skolgrammatiken. Kolla gärna hur er lärare vill att det ska benämnas."},
+  {q:"Vad är subjektet i ”Lukas sköt bollen i mål”?", o:["sköt","bollen","Lukas","i mål"], a:2, h:"Fråga: vem eller vad gör något?", e:"Subjektet är den som utför handlingen: Lukas. ”Bollen” är objekt och ”sköt” predikat."}
+ ],
+ chal:[["Skriv två egna påståenden och en fråga inför seminariet",30],["Förklara grannspråksförståelse med ett eget exempel",20],["Ta reda på vad grammatikprovet tar upp",20],["Gör en övning om ordklasser eller satsdelar",30]]
+},
+engelska:{name:"Engelska 2", topic:"Informative speech", match:"Redovisning tors 19/11 kl. 11.05",
+ note:"Utgår från lärarens instruktioner i Unikum.",
+ quiz:[
+  {q:"Vilken struktur ska talet ha enligt läraren?", o:["Introduction, the facts, conclusion","Facts, opinion, discussion","Question, answer, question","Story, twist, ending"], a:0, h:"Tre delar.", e:"Introduction (en kort bakgrund), the facts (din information) och conclusion (avslutningen)."},
+  {q:"Vad ska introduktionen göra?", o:["Fånga intresset och säga varför du valde ämnet","Ge alla fakta direkt","Sammanfatta talet","Tacka publiken"], a:0, h:"Catch the interest right away!", e:"Introduktionen ska väcka intresse direkt och förklara varför ämnet är intressant för dig."},
+  {q:"Hur ska PowerPointen se ut?", o:["Fler bilder än ord, ingen textvägg","Allt du säger ska stå på bilderna","Bara text","Ingen PowerPoint behövs"], a:0, h:"No “wall of text”.", e:"Läraren vill ha mer bilder än ord, enkel layout och bra bilder."},
+  {q:"Vad rekommenderar läraren som stöd när du talar?", o:["Stödord eller kort","Läsa från manus ordagrant","Läsa från bilderna","Improvisera helt"], a:0, h:"Cue cards.", e:"Keywords och cue cards rekommenderas, och att skriva in pauser och betoningar i manuset."}
+ ],
+ chal:[["Välj ämne du kan mycket om och som få i klassen kan",20],["Skriv disposition: intro, fakta, avslutning",20],["Gör PowerPointen med mest bilder",30],["Gör stödkort",20],["Öva högt med timer",30],["Generalrepetition för någon hemma",40]]
+},
+samh:{name:"Samhällskunskap 1b", topic:"Statsskick och kommunikation", match:"Omprov statsskick v 50. Prov kommunikation och medier, datum ej klart",
+ note:"Statsskicksfrågorna är allmän grund. Stäm av med läraren vad omprovet tar upp. Kommunikationsfrågorna bygger på instuderingsfrågorna i Forum 123.",
+ quiz:[
+  {q:"Hur många ledamöter har riksdagen?", o:["249","300","349","400"], a:2, h:"Mellan 300 och 400.", e:"Riksdagen har 349 ledamöter som väljs vart fjärde år."},
+  {q:"Hur stor andel av rösterna i hela landet behöver ett parti för att komma in i riksdagen?", o:["2 procent","4 procent","5 procent","12 procent"], a:1, h:"Det är en ”spärr”.", e:"Spärren är 4 procent i hela landet. Ett undantag: får partiet minst 12 procent i en valkrets får det vara med och dela på de fasta mandaten just där."},
+  {q:"Vad betyder maktdelning?", o:["Att makten delas mellan olika organ som granskar varandra","Att alla partier får lika många platser","Att kungen och regeringen delar på makten","Att kommuner bestämmer allt"], a:0, h:"Lagstiftande, verkställande och dömande.", e:"Maktdelning betyder att makten är uppdelad, så att ingen del får för mycket makt och de kan kontrollera varandra. Obs: Sverige har ingen strikt maktdelning. Regeringen utgår från riksdagen, som är folkets främsta företrädare. Därför talar man ofta om maktfördelning, men domstolarna är självständiga."},
+  {q:"Vilken är en av Sveriges grundlagar?", o:["Regeringsformen","Skollagen","Brottsbalken","Arbetsmiljölagen"], a:0, h:"Grundlagarna är fyra och står över andra lagar.", e:"De fyra grundlagarna är regeringsformen, successionsordningen, tryckfrihetsförordningen och yttrandefrihetsgrundlagen."},
+  {q:"Vad är selektiv perception?", o:["Att man lägger märke till det som passar det man redan tycker","Att medier väljer nyheter","Att man inte hör på grund av brus","Att man ger feedback"], a:0, h:"Instuderingsfråga 6 i Forum 123.", e:"Vi tar till oss information som bekräftar det vi redan tror och sorterar bort annat."},
+  {q:"Vilken är en av massmediernas demokratiska funktioner?", o:["Att granska makthavare","Att sälja reklam","Att underhålla","Att bestämma lagar"], a:0, h:"Medierna kallas ibland ”tredje statsmakten”.", e:"Brukar nämnas: informera, granska makthavare och vara ett forum för debatt."},
+  {q:"Vad är faktaresistens?", o:["När man vägrar ta till sig fakta som går emot ens åsikt","När fakta är felaktiga","När man inte har tillgång till internet","När medier ljuger"], a:0, h:"Instuderingsfråga 12.", e:"Faktaresistens betyder att man håller fast vid sin uppfattning även när fakta säger emot."}
+ ],
+ chal:[["Gå igenom det rättade statsskicksprovet: vad gick fel och varför?",40],["Gör en begreppslista för statsskick",20],["Svara på faktafrågorna 1–6 om kommunikation muntligt",30],["Svara på faktafrågorna 7–12",30],["Läs om källkritik på s. 444–445",20],["Svara på analysfrågorna 1–5 med argument för och emot",40]]
+}
+};
+const ORDER = ["fysik","bio","psyk","engelska","svenska","samh"];
+const LEVELS = [[0,"Avbytare"],[60,"Startelva"],[140,"Nyckelspelare"],[240,"Lagkapten"],[360,"Legend"]];
+const BADGES = [
+  {id:"first", name:"Första målet", test:s=>s.totalRight>=1},
+  {id:"hat", name:"Hattrick", test:s=>s.bestStreak>=3},
+  {id:"clean", name:"Hållit nollan", test:s=>s.perfect>=1},
+  {id:"grind", name:"Träningsnarkoman", test:s=>s.chalDone>=10},
+  {id:"all", name:"Hela truppen", test:s=>s.subjectsPlayed>=6}
+];
+
+const KEY = "traningslager-lukas-v1";
+let st = {xp:{}, chal:{}, best:{}, streak:0, bestStreak:0, perfect:0, badges:{}};
+try { const r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r) st = Object.assign(st, r); } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(st)); } catch(e) {} }
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+function xpOf(k){ return st.xp[k] || 0; }
+function totalXp(){ return ORDER.reduce((a,k)=>a+xpOf(k),0); }
+function level(x){ let i=0; for(let j=0;j<LEVELS.length;j++) if(x>=LEVELS[j][0]) i=j; const next=LEVELS[i+1]; return {name:LEVELS[i][1], from:LEVELS[i][0], to: next?next[0]:null, nextName: next?next[1]:null}; }
+function stats(){
+  const chalDone = Object.keys(st.chal).length;
+  const subjectsPlayed = ORDER.filter(k=>xpOf(k)>0).length;
+  const totalRight = Object.values(st.best).reduce((a,b)=>a+b,0);
+  return {chalDone, subjectsPlayed, totalRight, bestStreak:st.bestStreak, perfect:st.perfect};
+}
+function checkBadges(){
+  const s = stats();
+  for (const b of BADGES) if (!st.badges[b.id] && b.test(s)) { st.badges[b.id]=1; save(); toast("Ny badge: " + b.name); }
+}
+let tt;
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),2600); }
+function addXp(k, n, why){
+  const before = level(xpOf(k)).name;
+  st.xp[k] = xpOf(k) + n; save();
+  const after = level(xpOf(k)).name;
+  if (after !== before) toast("Uppflyttad till " + after + " i " + S[k].name + "!");
+  else if (why) toast("+" + n + " XP " + why);
+  checkBadges();
+}
+function lvlBar(k){
+  const x = xpOf(k), L = level(x);
+  const pct = L.to ? Math.round(100*(x-L.from)/(L.to-L.from)) : 100;
+  return '<div class="lvl"><span>' + L.name + '</span><span>' + x + ' XP</span></div><div class="bar"><i style="width:' + pct + '%"></i></div>' +
+    (L.to ? '<div class="note" style="margin-top:4px">' + (L.to - x) + ' XP till ' + L.nextName + '</div>' : '');
+}
+
+function home(){
+  const L = level(Math.floor(totalXp()/ORDER.length));
+  document.getElementById("app").innerHTML =
+  '<header class="hero"><div class="wrap"><h1>Träningsläger</h1><p>Ett ämne i taget. Rätt svar ger XP, och utmaningar ger mer. Samla tillräckligt för att gå från avbytare till legend.</p>' +
+  '<div class="total"><span class="pill"><b>' + totalXp() + '</b>XP totalt</span><span class="pill ghost">' + Object.keys(st.badges).length + ' av ' + BADGES.length + ' badges</span></div></div></header>' +
+  '<main class="wrap"><div class="grid">' + ORDER.map(k => {
+    const s = S[k];
+    return '<a class="subj" href="#' + k + '"><h2>' + s.name + '</h2><div class="meta">' + esc(s.topic) + '<br>' + esc(s.match) + '</div>' + lvlBar(k) + '</a>';
+  }).join("") + '</div>' +
+  '<div class="panel"><h2>Badges</h2><div class="badges">' + BADGES.map(b => '<span class="badge' + (st.badges[b.id]?' got':'') + '">' + b.name + '</span>').join("") + '</div>' +
+  '<p class="note">Första målet: ett rätt svar. Hattrick: tre rätt i rad. Hållit nollan: alla rätt i ett quiz. Träningsnarkoman: tio utmaningar. Hela truppen: XP i alla sex ämnen.</p></div>' +
+  '<footer><p>Framstegen sparas i webbläsaren du använder.</p><button class="reset" id="reset" type="button">Nollställ allt</button></footer></main>';
+  document.getElementById("reset").onclick = () => { if (confirm("Nollställa all XP och alla badges?")) { st = {xp:{}, chal:{}, best:{}, streak:0, bestStreak:0, perfect:0, badges:{}}; save(); home(); } };
+}
+
+let quiz = null;
+function subject(k){
+  const s = S[k];
+  quiz = {k, i:0, right:0, hinted:false, answered:false};
+  document.getElementById("app").innerHTML =
+  '<header class="hero"><div class="wrap"><a class="back" href="#">‹ Alla ämnen</a><h1>' + s.name + '</h1><p>' + esc(s.topic) + '. ' + esc(s.match) + '.</p></div></header>' +
+  '<main class="wrap"><div class="panel">' + lvlBar(k) + '<p class="note">' + esc(s.note) + '</p></div>' +
+  '<div class="panel" id="quiz"></div>' +
+  '<div class="panel"><h2>Utmaningar</h2><p class="lead">Gör uppgiften på riktigt, bocka sedan av. Var ärlig, det är din egen match.</p><ul class="chal">' +
+  s.chal.map((c,i) => { const id=k+"-"+i; return '<li><label><input type="checkbox" data-c="' + id + '" data-xp="' + c[1] + '"' + (st.chal[id]?' checked':'') + '><span>' + esc(c[0]) + '</span><span class="xp">+' + c[1] + ' XP</span></label></li>'; }).join("") +
+  '</ul></div></main>';
+  renderQ();
+}
+function renderQ(){
+  const s = S[quiz.k], el = document.getElementById("quiz");
+  if (quiz.i >= s.quiz.length) {
+    const n = s.quiz.length, r = quiz.right;
+    if (r > (st.best[quiz.k]||0)) { st.best[quiz.k] = r; }
+    if (r === n) st.perfect = (st.perfect||0) + 1;
+    save(); checkBadges();
+    const verdict = r === n ? "Fullpott! Du höll nollan." : (r >= n*0.7 ? "Stark match. Kör de missade igen så sitter det." : "Bra att du tränade. Läs förklaringarna och kör en gång till.");
+    el.innerHTML = '<h2>Slutsignal: ' + r + ' av ' + n + '</h2><p>' + verdict + '</p><div class="row"><button class="btn" id="again" type="button">Kör igen</button><a class="btn sec" href="#" style="text-decoration:none">Till alla ämnen</a></div>';
+    document.getElementById("again").onclick = () => { quiz.i=0; quiz.right=0; renderQ(); };
+    return;
+  }
+  const q = s.quiz[quiz.i];
+  quiz.hinted = false; quiz.answered = false;
+  el.innerHTML = '<div class="qhead"><span>Fråga ' + (quiz.i+1) + ' av ' + s.quiz.length + '</span><span>' + quiz.right + ' rätt hittills</span></div>' +
+    '<p class="q">' + esc(q.q) + '</p><div class="opts">' + q.o.map((o,j) => '<button class="opt" type="button" data-j="' + j + '">' + esc(o) + '</button>').join("") + '</div>' +
+    '<div id="hintbox"></div><div class="row" id="ctrl"><button class="btn sec" id="hintbtn" type="button">Ledtråd (ger halva XP)</button></div><div id="fb"></div>';
+  document.getElementById("hintbtn").onclick = () => { quiz.hinted = true; document.getElementById("hintbox").innerHTML = '<p class="hint">' + esc(q.h) + '</p>'; document.getElementById("hintbtn").remove(); };
+  el.querySelectorAll(".opt").forEach(b => b.onclick = () => answer(+b.dataset.j));
+}
+function answer(j){
+  if (quiz.answered) return; quiz.answered = true;
+  const q = S[quiz.k].quiz[quiz.i], ok = j === q.a;
+  document.querySelectorAll(".opt").forEach(b => { b.disabled = true; const jj=+b.dataset.j; if (jj===q.a) b.classList.add("right"); else if (jj===j) b.classList.add("wrong"); });
+  if (ok) { quiz.right++; st.streak++; st.bestStreak = Math.max(st.bestStreak, st.streak); addXp(quiz.k, quiz.hinted?5:10, quiz.hinted?"(med ledtråd)":""); }
+  else { st.streak = 0; save(); }
+  const hb = document.getElementById("hintbtn"); if (hb) hb.remove();
+  document.getElementById("fb").innerHTML = '<div class="fb"><b>' + (ok ? "Mål!" : "Utanför stolpen.") + '</b> ' + esc(q.e) + '</div>';
+  document.getElementById("ctrl").innerHTML = '<button class="btn" id="nextq" type="button">' + (quiz.i+1 < S[quiz.k].quiz.length ? "Nästa fråga" : "Se resultatet") + '</button>';
+  const nb = document.getElementById("nextq"); nb.focus();
+  nb.onclick = () => { quiz.i++; renderQ(); };
+}
+document.addEventListener("change", e => {
+  const id = e.target.dataset && e.target.dataset.c; if (!id) return;
+  const k = id.split("-")[0], xp = +e.target.dataset.xp;
+  if (e.target.checked) { st.chal[id]=1; addXp(k, xp, "för utmaningen"); }
+  else { delete st.chal[id]; st.xp[k] = Math.max(0, xpOf(k)-xp); save(); }
+  const p = document.querySelector("main .panel"); if (p) p.innerHTML = lvlBar(k) + '<p class="note">' + esc(S[k].note) + '</p>';
+});
+
+function route(){
+  const h = location.hash.replace("#","");
+  if (S[h]) subject(h); else home();
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
